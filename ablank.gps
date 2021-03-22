@@ -1,0 +1,90 @@
+#!/bin/gnuplot
+set terminal postscript enhanced eps "Arial,16" \
+size 8.5cm, 6 cm dashlength 2 lw 2
+
+set size 1.0,1.0
+set style data lines
+
+#Set Tics
+set tics out scale 1 
+set mxtics 2
+set mytics 2
+set ytics nomirror #format "%0.2f"
+set xtics nomirror #format "10^{%L}"
+
+#Border Grid
+#set border lw 2
+#set grid xtics ytics
+#set obj rect from graph 0.0,0.0 to graph 1.0,1.0 behind fc rgb "#E9EEE9"
+
+#KEY
+set key top left
+set key spacing 1.2
+
+#####################################
+
+f1=""
+l1=""
+f2=""
+l2=""
+f3=""
+l3=""
+f4=""
+l4=""
+f5=""
+l5=""
+f6=""
+l6=""
+f7=""
+l7=""
+f8=""
+l8=""
+f9=""
+l9=""
+f10=""
+l10=""
+f11=""
+l11=""
+
+####################################
+
+caa="#A42828" #Red
+cab="#A46628"
+cac="#A4A428"
+cad="#66A428"
+cae="#28A428" #Green
+caf="#28A466"
+cag="#28A4A4"
+cah="#2866A4" #Blue
+cai="#2828A4"
+caj="#6628A4" #Purple
+cak="#A428A4"
+cal="#A42866"
+ckb="#000000" #Black
+
+set xlabel ""
+set ylabel ""
+set title  "" 
+set output "aplot.eps"
+
+plot [:][:] \
+f1  using ($1):($2) with l lw 2 lt 1  lc rgb caa title l1,\
+#f2  using ($1):($2) with l lw 2 lt 1  lc rgb cab title l2,\
+#f3  using ($1):($2) with l lw 2 lt 1  lc rgb cac title l3,\
+#f4  using ($1):($2) with l lw 2 lt 1  lc rgb cad title l4,\
+#f5  using ($1):($2) with l lw 2 lt 1  lc rgb cae title l5,\
+#f6  using ($1):($2) with l lw 2 lt 1  lc rgb caf title l6,\
+#f7  using ($1):($2) with l lw 2 lt 1  lc rgb cag title l7,\
+#f8  using ($1):($2) with l lw 2 lt 1  lc rgb cah title l8,\
+#f9  using ($1):($2) with l lw 2 lt 1  lc rgb cai title l9,\
+#f10 using ($1):($2) with l lw 2 lt 1  lc rgb caj title l10,\
+#f11 using ($1):($2) with l lw 2 lt 1  lc rgb cak title l11
+
+
+#f1  using ($1):($2) axes x1y1 with p ps 2 lw 4 lt 1  lc rgb "#FF0000" title "",\
+
+#y1(x)=m1*x+b1
+#fit [][:] y1(x) f1 using 1:2 via m1, b1
+#lab1=sprintf("%f *x + %f",m1,b1)
+#m1*x+b1   lw 2 lc rgb "red" notitle lab1 ,\
+

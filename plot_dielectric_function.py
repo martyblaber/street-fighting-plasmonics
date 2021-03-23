@@ -18,6 +18,9 @@
 #   along with SFP.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+
+
+
 [1] Noguez, C.; Roma ́n-Vela ́zquez, C. E. Phys. ReV. B Condens. Matt. 2004, 70 (19), 195412.
 [2] Link, S.; El-Sayed, M. A. Int. ReV. Phys. Chem. 2000, 19 (3), 409– 453.
 [3] Kittel, C. Introduction to Solid State Physics, 7th ed.; John Wiley and Sons: New York, 1996.
@@ -25,6 +28,7 @@
 [5] Blaber, M. G.; Arnold, M. D.; Ford, M. J., J. Phys. Chem. C 2009, 113, 8, 3041–3045
 
 """
+
 
 
 import pathlib
@@ -38,7 +42,6 @@ import SFP_dielectrics
 mgb_colors = ["#A42828", "#A46628", "#A4A428", "#66A428",
               "#28A428", "#28A466", "#28A4A4", "#2866A4",
               "#2828A4", "#6628A4", "#A428A4", "#A42866"]
-
 
 def ev_to_nm(ev):
     # 1239.841984 nm per ev

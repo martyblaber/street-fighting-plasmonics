@@ -172,9 +172,33 @@ def generate_tab(filename, minwave, maxwave, dwave, func_pointer, m=1.00, gscat=
 
 # def
 
-def drude_ev(w, wp, gamma, einf=1, return_as_2d_array=False):
+def drude_energy(w, wp, gamma, einf=1, return_as_2d_array=False):
+    """
+    Calculates the complex drude dielectric function in energy (or frequency) units (J, eV, cm^-1)
+                      wp^2                wp^2         i w g
+    eps = einf - ----------- = einf -  --------- + -------------
+                 w (w + i g)           w^2 + g^2   w (w^2 + g^2)
+                 
+    Where:
+        eps = epsilon = permittivity = dielectric function
+        einf = Over a fixed frequency range, this parameter can be used to account for the contri-
+               bution of high frequency electronic transitions. It can be complex.
+    Args:
+        w (float): w = omega = frequency or energy of interest
+        wp (float): wp = omega_p = Plasma frequency in energy or frequency units
+        gamma (float): g = gamma = scattering frequency or equivalent energy.
+        einf (float or complex, optional): DESCRIPTION. see above
+        return_as_2d_array (TYPE, optional): When you provide an array of input w's, the code will
+                                             return an array of complex numbers. If you would like
+                                             to return a 2D list of floats, where the real and
+                                             imaginary numbers make up D2, then use this option.
+    Returns: Permittivity
+        TYPE: float if input is a float. array if input is a list or array.
+
+    """
     w = np.array(w)
-    array_of_complex = einf - ((wp**2) / (w * (w + complex(0., 1.) * gamma)))
+    ii = complex(0., 1.)
+    array_of_complex = einf - ( (wp**2) / (w * (w + ii * gamma)) )
 
     if return_as_2d_array:
         array_2d = np.stack((array_of_complex.real, array_of_complex.imag), -1)

@@ -123,9 +123,9 @@ def drude_wave(wavelength, oscillator_parameters):
     gp = oscillator_parameters['gamma_p']
 
     # Drude Part and Total
-    permittivty = eps + ii*eps_i - 1.00 / ((lp**2.0)*(l**-2.0 + ii/(gp*l)))
+    permittivity = eps + ii*eps_i - 1.00 / ((lp**2.0)*(l**-2.0 + ii/(gp*l)))
 
-    return permittivty    
+    return permittivity    
     
 def leru_oscillator(wavelength, oscillator_parameters):
     
@@ -143,6 +143,15 @@ def leru_oscillator(wavelength, oscillator_parameters):
     permittivity = (a0/l0)*(iba+ibb)
     
     return permittivity
+    
+def permittivity_to_conductivity(w_ev,eps):
+    
+    oc = np.zeros_like(eps)
+    
+    w_rads = w_ev / 4.135667E-15
+    eps_0 = 8.85418782e-12
+    oc = ((eps - eps_0) * w_rads)/complex(0.,1.)
+    return oc
     
 
 def ev_to_nm(energy_in_ev):
@@ -247,6 +256,160 @@ def plot_decomposed_oscillator_model(parameter_dictionary,
 
     return fig
     
+def plot_decomposed_oscillator_model_oc(parameter_dictionary,
+                                     min_w=0.5,max_w=6,
+                                     xmax=6,epsr_ylim=None):
+
+
+    w = np.arange(min_w, max_w, 0.1)
+
+    # plt.title(r'$\alpha > \beta$')
+    fig = plt.figure(figsize=(12/2.54, 15/2.54))
+
+    #Top Plot: Imag Permittivity
+    ax1 = fig.add_subplot(211) 
+
+    ax1.set_xticks([x for x in range(1, xmax+2)])
+    ax1.set_xlim(np.min(w), xmax)
+    
+    
+    #ax1.set_yscale('log')
+    #ax1.set_ylim(-1,10)
+    #ax1.set_ylim(0.01,10)
+    #ax1.set_yticks([0.001,0.01,0.1,1,10])
+    #ax1.set_yticklabels([r'$10^{-3}$','0.01','0.1','1','10'])
+    ax1.set_ylabel(r'Imaginary Conductivity, Im($\sigma$)')
+    
+    #if imag_ylim is not None: 
+    #    ax1.set_ylim(top=imag_ylim)
+   
+    #ax1.set_xscale('log')
+    #ax1.set_ylabel(r'Dielectric Function, $\epsilon(\omega)$ (eV)')
+    
+    secax = ax1.secondary_xaxis('top', functions=(nm_to_ev, ev_to_nm))
+    secax.set_xlabel(r'$\lambda$(nm)')
+    secax.set_xticks([1240, 620, 413, 310, 248, 207, 177, 155, 138, 124])
+
+    # Axis 2
+    ax2 = fig.add_subplot(212, sharex = ax1)
+    ax2.axhline(y=0, color='k', linestyle="--")
+    #if epsr_ylim is not None: 
+    #    ax2.set_ylim(top=10, bottom=epsr_ylim)
+        
+    ax2.set_ylabel(r'Real Conductivity, Re($\sigma$)')
+
+    p = parameter_dictionary
+    oscs = p['Oscillators']
+    
+    eps=[]
+    
+    oc_real = []
+    oc_imag = []
+
+    for osc, lc in zip(oscs, mgb_colors[::2]):
+        eps.append(evaluate_one_oscillator_energy(w,osc))
+        oc = permittivity_to_conductivity(w,eps[-1])
+        oc_real.append(np.real(oc))
+        oc_imag.append(np.imag(oc))
+        
+        line, = ax2.plot(w, oc_real[-1], lw=2, ls="--", label=osc['name'], color=lc)
+        line, = ax1.plot(w, oc_imag[-1], lw=2, ls="--", label=osc['name'], color=lc)
+        
+    eps_all = evaluate_oscillators_energy(w, p)
+    oc_all = permittivity_to_conductivity(w,eps_all )
+    oc_all_real = np.real(oc_all)
+    oc_all_imag = np.imag(oc_all)
+    
+    line, = ax2.plot(w, oc_all_real, lw=2, ls="-", color='k')
+    line, = ax1.plot(w, oc_all_imag, lw=2, ls="-", color='k')
+    
+    
+    ax2.set_xlabel(r'$\omega$(eV)')
+
+    plt.legend(loc="lower right")
+    
+
+    return fig
+
+def plot_decomposed_oscillator_model_oc_log(parameter_dictionary,
+                                     min_w=0.0001,max_w=10,
+                                     xmax=6,epsr_ylim=None):
+
+
+    logw = np.arange(np.log10(min_w), np.log10(max_w), 0.1)
+    w = 10**logw #np.arange(min_w, max_w, 0.1)
+
+    # plt.title(r'$\alpha > \beta$')
+    fig = plt.figure(figsize=(12/2.54, 15/2.54))
+
+    #Top Plot: Imag Permittivity
+    ax1 = fig.add_subplot(211) 
+
+    ax1.set_xticks([x for x in range(1, xmax+2)])
+    ax1.set_xlim(np.min(w), xmax)
+    
+    
+    #ax1.set_yscale('log')
+    #ax1.set_ylim(-1,10)
+    #ax1.set_ylim(0.01,10)
+    #ax1.set_yticks([0.001,0.01,0.1,1,10])
+    #ax1.set_yticklabels([r'$10^{-3}$','0.01','0.1','1','10'])
+    ax1.set_ylabel(r'Imaginary Conductivity, Im($\sigma$)')
+    
+    #if imag_ylim is not None: 
+    #    ax1.set_ylim(top=imag_ylim)
+   
+    ax1.set_xscale('log')
+    #ax1.set_ylabel(r'Dielectric Function, $\epsilon(\omega)$ (eV)')
+    
+    secax = ax1.secondary_xaxis('top', functions=(nm_to_ev, ev_to_nm))
+    secax.set_xlabel(r'$\lambda$(nm)')
+    secax.set_xticks([1240, 620, 413, 310, 248, 207, 177, 155, 138, 124])
+
+    # Axis 2
+    ax2 = fig.add_subplot(212, sharex = ax1)
+    ax2.axhline(y=0, color='k', linestyle="--")
+    #if epsr_ylim is not None: 
+    #    ax2.set_ylim(top=10, bottom=epsr_ylim)
+    
+    ax2.set_xscale('log')
+    ax2.set_ylabel(r'Real Conductivity, Re($\sigma$)')
+
+    p = parameter_dictionary
+    oscs = p['Oscillators']
+    
+    eps=[]
+    
+    oc_real = []
+    oc_imag = []
+
+    for osc, lc in zip(oscs, mgb_colors[::2]):
+        eps.append(evaluate_one_oscillator_energy(w,osc))
+        oc = permittivity_to_conductivity(w,eps[-1])
+        oc_real.append(np.real(oc))
+        oc_imag.append(np.imag(oc))
+        
+        line, = ax2.plot(w, oc_real[-1], lw=2, ls="--", label=osc['name'], color=lc)
+        line, = ax1.plot(w, oc_imag[-1], lw=2, ls="--", label=osc['name'], color=lc)
+        
+    eps_all = evaluate_oscillators_energy(w, p)
+    oc_all = permittivity_to_conductivity(w,eps_all )
+    oc_all_real = np.real(oc_all)
+    oc_all_imag = np.imag(oc_all)
+    
+    line, = ax2.plot(w, oc_all_real, lw=2, ls="-", color='k')
+    line, = ax1.plot(w, oc_all_imag, lw=2, ls="-", color='k')
+    
+    print("w, %e"%w[0])
+    print("sigma, %e"%oc_all[0])
+    
+    ax2.set_xlabel(r'$\omega$(eV)')
+
+    plt.legend(loc="lower right")
+    
+
+    return fig
+    
     
 
 if __name__ == "__main__":
@@ -257,11 +420,30 @@ if __name__ == "__main__":
     eo = evaluate_oscillators_wavelength(500.0, op)
     print(eo,eo - eo_ref)
     
+    if False:
+        fig = plot_decomposed_oscillator_model_oc(op,epsr_ylim=-30)
+        
+        plt.savefig("Conductivity of Au - normal scale.svg")
+        plt.savefig("Conductivity of Au - normal scale.png",dpi=600)
+        
+        plt.show()
+    
     if True:
+        fig = plot_decomposed_oscillator_model_oc_log(op,epsr_ylim=-30)
+        
+        plt.savefig("Conductivity of Au - log scale.svg")
+        plt.savefig("Conductivity of Au - log scale.png",dpi=600)        
+        
+        plt.show()
+    
+    
+    if False:
         fig = plot_decomposed_oscillator_model(op,epsr_ylim=-30)
         
         plt.savefig("Permittivity of Au.svg")
         plt.savefig("Permittivity of Au.png",dpi=600)
         plt.show()
+        
+        
         
 
